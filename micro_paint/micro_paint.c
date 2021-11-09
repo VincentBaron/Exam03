@@ -6,7 +6,7 @@
 /*   By: vbaron <vbaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/09 10:43:15 by vbaron            #+#    #+#             */
-/*   Updated: 2021/11/09 15:54:54 by vbaron           ###   ########.fr       */
+/*   Updated: 2021/11/09 16:09:42 by vbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,26 @@ int draw_square(t_gen *micro)
     return (1);
 }
 
+int draw_empty_square(t_gen *micro)
+{
+    int i;
+    int j;
+
+    i = micro->start_vert + 0.5;
+    while (i < micro->height && i - (micro->start_vert + 0.5) < micro->sq_height)
+    {
+        j = micro->start_hor + 0.5;
+        while (j < micro->width && j - (micro->start_hor + 0.5) < micro->sq_width)
+        {
+            if (i == micro->start_vert + 0.5 || i == micro->start_vert + 0.5 + micro->sq_height - 1 || j == micro->start_hor + 0.5 || j == micro->start_hor + 0.5 + micro->sq_width - 1)
+                micro->array[(int)(j + micro->width * i)] = micro->color;
+            j++;
+        }
+        i++;
+    }
+    return (1);
+}
+
 int draw_squares(t_gen *micro)
 {
     int i;
@@ -97,8 +117,8 @@ int draw_squares(t_gen *micro)
     {
         if (micro->type == 'R')
             draw_square(micro);
-        // else if (micro->type == 'r')
-        //     draw_empty_square(micro);
+        else if (micro->type == 'r')
+            draw_empty_square(micro);
     }
     return (1);
 }
