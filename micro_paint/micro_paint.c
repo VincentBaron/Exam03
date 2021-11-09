@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   micor_paint.c                                      :+:      :+:    :+:   */
+/*   micro_paint.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbaron <vbaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/09 10:43:15 by vbaron            #+#    #+#             */
-/*   Updated: 2021/11/09 11:22:30 by vbaron           ###   ########.fr       */
+/*   Updated: 2021/11/09 15:54:54 by vbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int read_file(t_gen *micro)
 {
         int ret;
         
-        ret = fscanf(micro->fd, "%d %d %c", &micro->width, &micro->height, &micro->bgrd);
+        ret = fscanf(micro->fd, "%d %d %c\n", &micro->width, &micro->height, &micro->bgrd);
         return (1);
 }
 
@@ -58,15 +58,49 @@ int display(t_gen *micro)
     int i;
     int f;
 
-    while (i < micro->height)
+    i = -1;
+    while (++i < micro->height)
     {
         f = -1;
         while (++f < micro->width)
-            write(1, &micro->bgrd, 1);
+            write(1, &micro->array[f + i * micro->width], 1);
         write(1, "\n", 1);
-        i++;
     }
     return(1);
+}
+
+int draw_square(t_gen *micro)
+{
+    int i;
+    int j;
+
+    i = micro->start_vert + 0.5;
+    while (i < micro->height && i - (micro->start_vert + 0.5) < micro->sq_height)
+    {
+        j = micro->start_hor + 0.5;
+        while (j < micro->width && j - (micro->start_hor + 0.5) < micro->sq_width)
+        {
+            micro->array[(int)(j + micro->width * i)] = micro->color;
+            j++;
+        }
+        i++;
+    }
+    return (1);
+}
+
+int draw_squares(t_gen *micro)
+{
+    int i;
+    int ret;
+
+    while ((ret = fscanf(micro->fd, "%c %f %f %f %f %c\n", &micro->type, &micro->start_hor, &micro->start_vert, &micro->sq_width, &micro->sq_height, &micro->color)) == 6)
+    {
+        if (micro->type == 'R')
+            draw_square(micro);
+        // else if (micro->type == 'r')
+        //     draw_empty_square(micro);
+    }
+    return (1);
 }
 
 int main(int ac, char **av)
@@ -90,6 +124,7 @@ int main(int ac, char **av)
         return (1);
     }
     draw_back(&micro);
+    draw_squares(&micro);
     display(&micro);
     return (0);
 }
