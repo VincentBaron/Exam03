@@ -8,7 +8,7 @@
             "name": "(lldb) Lancer",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/mnt/nfs/homes/vbaron/Desktop/Exam03/micro_paint/a.out",
+            "program": "/Users/vbaron/Desktop/Exam03/mini_paint/a.out",
             "args": ["1"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

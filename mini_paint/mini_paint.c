@@ -14,7 +14,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include "./micro.h"
+#include "./mini.h"
+ #include <math.h>
 
 int ft_strlen(char *s)
 {
@@ -75,17 +76,24 @@ int display(t_gen *micro)
 
 int is_in_rect(float i, float j, t_gen *micro)
 {
-    if (i < micro->start_hor || i > micro->start_hor + micro->sq_height || j < micro->start_hor || j > micro->start_hor + micro->sq_width)
-        return (0);
-    return (1);
+    float offset;
+
+    offset = sqrt(powf(i - micro->start_vert, 2.) + powf(j - micro->start_hor, 2.));
+    if(offset <= micro->radius)
+        return (1);
+    return (0);
 }
 
 int is_empty_rect(float i, float j, t_gen *micro)
 {
-     if (i < micro->start_vert || i > micro->start_vert + micro->sq_height || j < micro->start_hor || j > micro->start_hor + micro->sq_width)
-        return (0);
-    if (i - micro->start_vert < 1.000000000 || j - micro->start_hor < 1.00000000 || ((micro->start_vert + micro->sq_height) - i < 1.00000000) || ((micro->start_hor + micro->sq_width) - j < 1.00000000))
-        return (1);
+    float offset;
+
+    offset = sqrt(powf(i - micro->start_vert, 2.) + powf(j - micro->start_hor, 2.));
+    if(offset <= micro->radius)
+    {
+        if ((micro->radius - offset) < 1.00000000)
+            return (1);
+    }
     return (0);
 }
 
@@ -93,10 +101,9 @@ int draw_square(t_gen *micro)
 {
     int i;
     int j;
-    int R;
-    int r;
+    int C;
+    int c;
 
-    r = 0;
     i = 0;
     while (i < micro->height)
     {
@@ -104,9 +111,9 @@ int draw_square(t_gen *micro)
         while (j < micro->width)
         {
             
-            r = is_empty_rect(i, j, micro);
-            R = is_in_rect(i, j, micro);
-            if ((r && micro->type == 'r') || (R && micro->type == 'R'))
+            c = is_empty_rect(i, j, micro);
+            C = is_in_rect(i, j, micro);
+            if ((c && micro->type == 'c') || (C && micro->type == 'C'))
                 micro->array[(int)(j + micro->width * i)] = micro->color;
             j++;
         }
@@ -119,9 +126,9 @@ int draw_squares(t_gen *micro)
 {
     int ret;
 
-    while ((ret = fscanf(micro->fd, "%c %f %f %f %f %c\n", &micro->type, &micro->start_hor, &micro->start_vert, &micro->sq_width, &micro->sq_height, &micro->color)) == 6)
+    while ((ret = fscanf(micro->fd, "%c %f %f %f %c\n", &micro->type, &micro->start_hor, &micro->start_vert, &micro->radius, &micro->color)) == 5)
     {
-        if (micro->sq_height <= 0.0000000 || micro->sq_width <= 0.00000000 || (micro->type != 'r' && micro->type != 'R'))
+        if (micro->radius <= 0.00000000 || (micro->type != 'c' && micro->type != 'C'))
             return (0);
         draw_square(micro);
     }
